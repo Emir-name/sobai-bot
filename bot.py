@@ -165,10 +165,10 @@ async def sobai_error(interaction: discord.Interaction, error: app_commands.AppC
 
 # ====================== СЛЕШ-КОМАНДА /imagine ======================
 
-@tree.command(name="sobima", description="Сгенерировать изображение")
+@tree.command(name="imagine", description="Сгенерировать изображение")
 @app_commands.describe(prompt="Опиши что нарисовать")
 @app_commands.checks.cooldown(1, 15, key=lambda i: i.user.id)
-async def sobima(interaction: discord.Interaction, prompt: str):
+async def imagine(interaction: discord.Interaction, prompt: str):
     try:
         await interaction.response.defer(thinking=True)
     except (discord.NotFound, discord.HTTPException) as e:
@@ -209,8 +209,8 @@ async def sobima(interaction: discord.Interaction, prompt: str):
         log.error("Ошибка отправки изображения: %s", e)
 
 
-@sobima.error
-async def sobima_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+@imagine.error
+async def imagine_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
     if isinstance(error, app_commands.CommandOnCooldown):
         await interaction.response.send_message(
             f"⏳ Подожди ещё {error.retry_after:.1f} сек.", ephemeral=True
@@ -245,47 +245,6 @@ async def on_message(message: discord.Message):
         except discord.HTTPException as e:
             log.error("Ошибка reply: %s", e)
 
-
-
-# ====================== /roll ======================
-
-@tree.command(name="roll", description="Бросить кубик")
-@app_commands.describe(sides="Количество граней (по умолчанию 6)")
-async def roll(interaction: discord.Interaction, sides: int = 6):
-    if sides < 2:
-        await interaction.response.send_message("❌ Кубик должен иметь минимум 2 грани!", ephemeral=True)
-        return
-    import random
-    result = random.randint(1, sides)
-    await interaction.response.send_message(
-        f"🎲 **{interaction.user.name}** бросил кубик d{sides} и выпало... **{result}**!"
-    )
-
-
-# ====================== /8ball ======================
-
-EIGHT_BALL_ANSWERS = [
-    "✅ Определённо да!",
-    "✅ Без сомнений!",
-    "✅ Скорее всего да.",
-    "✅ Похоже на то.",
-    "🤔 Спроси позже...",
-    "🤔 Лучше не знать.",
-    "🤔 Сложно сказать.",
-    "❌ Не рассчитывай на это.",
-    "❌ Мой ответ — нет.",
-    "❌ Определённо нет!",
-]
-
-@tree.command(name="8ball", description="Магический шар отвечает на твой вопрос")
-@app_commands.describe(question="Задай вопрос")
-async def eight_ball(interaction: discord.Interaction, question: str):
-    import random
-    answer = random.choice(EIGHT_BALL_ANSWERS)
-    await interaction.response.send_message(
-        f"🎱 **{question}**
-{answer}"
-    )
 
 # ====================== СТАРТ ======================
 
