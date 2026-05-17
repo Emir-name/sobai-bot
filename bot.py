@@ -139,12 +139,9 @@ async def generate_video(prompt: str) -> str | None:
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=300)) as session:
             # Создаём задачу
             async with session.post(
-                "https://api.replicate.com/v1/predictions",
+                "https://api.replicate.com/v1/models/minimax/video-01/predictions",
                 headers=headers,
-                json={
-                    "version": "9f747673945c62801b13b84701c783929c0ee784e4748ec062204894dda1a351",
-                    "input": {"prompt": prompt, "num_frames": 24, "fps": 8}
-                }
+                json={"input": {"prompt": prompt}}
             ) as resp:
                 if resp.status not in (200, 201):
                     log.error("Replicate create %s", resp.status)
@@ -280,7 +277,7 @@ async def video(interaction: discord.Interaction, prompt: str):
 
     if video_url is None:
         try:
-            await interaction.channel.send("❌ Не удалось сгенерировать видео. Проверь логи Render.")
+            await interaction.channel.send("❌ Не удалось сгенерировать видео, попробуй ещё раз.")
         except discord.HTTPException:
             pass
         return
